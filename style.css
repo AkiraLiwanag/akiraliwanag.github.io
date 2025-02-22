@@ -86,7 +86,7 @@ hr:last-child { display: none; }
 	width: 100%;
 	margin-bottom: 20px;
 }
-#posts { display: none; }
+#posts {}
 #posts li { margin-bottom: 20px; }
 #posts ol li { margin: 0; }
 #posts li img {
