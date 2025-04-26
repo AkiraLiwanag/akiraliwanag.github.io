@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Result Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button.stop {
+            background-color: #f44336;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+            min-height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Random Result Generator</h2>
+    <button onclick="startGenerator()">Start</button>
+    <button onclick="stopGenerator()" class="stop">Stop</button>
+    <div id="output"></div>
+
+    <script>
+        let isRunning = false;
+        let intervalId = null;
+
+        const results = ["ah", "aah", "aaah", "aaaah", "aaaaah", "um", "umm", "ummmm", 
+                        "oh", "ooh", "oooh", "ooooh", "oooooh", "Akira", "Akira", "Akira", 
+                        "yes", "yes", "uh", "uuh", "uuuh", "uuuuh", "uuuuuh"];
+
+        function generateRandomResult() {
+            const numResults = Math.floor(Math.random() * 3) + 1; // 1 to 3 results
+            const randomResults = Array.from({ length: numResults }, 
+                () => results[Math.floor(Math.random() * results.length)]);
+            const resultText = randomResults.join(", ");
+
+            // Output to page
+            document.getElementById("output").textContent = `Result: ${resultText}`;
+
+            // Speak the result
+            const utterance = new SpeechSynthesisUtterance(resultText);
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function mainLoop() {
+            const integer = Math.floor(Math.random() * 16); // 0 to 15
+            if (integer > 4 && Math.random() < 0.5) {
+                generateRandomResult();
+            }
+        }
+
+        function startGenerator() {
+            if (!isRunning) {
+                isRunning = true;
+                // Run immediately, then every 0-5 seconds
+                mainLoop();
+                intervalId = setInterval(() => {
+                    mainLoop();
+                }, Math.random() * 5000); // Random delay in milliseconds
+            }
+        }
+
+        function stopGenerator() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(intervalId);
+                intervalId = null;
+                document.getElementById("output").textContent = "Stopped";
+                window.speechSynthesis.cancel(); // Stop any ongoing speech
+            }
+        }
+
+        // Handle page visibility to pause/resume speech
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                window.speechSynthesis.pause();
+            } else {
+                window.speechSynthesis.resume();
+            }
+        });
+    </script>
+</body>
+</html>
